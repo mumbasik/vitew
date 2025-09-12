@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <button id="press"></button>
+  </head>
+  <body>
+    <script type="module">
+      import { v4 as udv4 } from "https://cdn.jsdelivr.net/npm/uuid@9.0.0/dist/esm-browser/index.js";
+      const button = document.getElementById("press");
+      button.textContent = "Press";
+      const diV = document.createElement("div");
+      diV.id = "output";
+      document.body.appendChild(button);
+      document.body.appendChild(diV);
+      button.addEventListener("click", function () {
+        const uuid = udv4();
+        diV.textContent = uuid;
+      });
+    </script>
+  </body>
+</html>
