@@ -1,0 +1,505 @@
+<<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(120deg, #0d1117, #1b2330);
+        color: white;
+      }
+
+      .container {
+        width: 350px;
+        background-color: #11161d;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        background: #202832;
+        color: #fff;
+        border: 1px solid #3b4658;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+
+      textarea {
+        height: 80px;
+        resize: none;
+      }
+
+      label {
+        font-size: 14px;
+        font-weight: bold;
+      }
+      .link-buttonError {
+        color: #9e1e23;
+        border-color: #680c0f;
+      }
+
+      .link-button {
+        color: rgb(217, 217, 224);
+        cursor: pointer;
+        text-decoration: underline;
+        transition: 0.2s;
+        display: inline-block;
+        padding: 4px 6px;
+        vertical-align: middle;
+      }
+
+      .link-button:hover {
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: #243447;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+        font-weight: bold;
+      }
+
+      button:hover {
+        transform: translateY(-3px);
+        background-color: #3b4f63;
+      }
+
+      .status-btn {
+        margin-top: 10px;
+      }
+
+      .completed {
+        background-color: #0e6b2f !important;
+      }
+
+      .inProgress {
+        background-color: #1d5ed9 !important;
+      }
+
+      .closed {
+        background-color: #9e1e23 !important;
+      }
+
+      .links-row {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-overlay {
+        position: fixed;
+
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal {
+        width: 280px;
+        background-color: #141b24;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .modal h3 {
+        text-align: center;
+      }
+
+      .close-btn {
+        background-color: #9e1e23;
+      }
+      .error {
+        border: 2px solid red !important;
+        box-shadow: 0 0 10px red !important;
+        background-color: #ffe6e6;
+      }
+
+      .showcard {
+        width: 100%;
+        height: 200px;
+        background-color: #202832;
+        border-radius: 8px;
+        padding: 10px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2 style="text-align: center">Task Manager</h2>
+      <label for="taskTittle">Task Title</label>
+      <input type="text" id="taskTittle" placeholder="Enter task title" />
+      <label for="taskType">Type</label>
+      <select id="taskType">
+        <option value="None">None</option>
+        <option value="Feature">Feature</option>
+        <option value="Bug">Bug</option>
+        <option value="Improvement">Improvement</option>
+      </select>
+      <label for="taskDescription">Task Description</label>
+      <textarea
+        id="taskDescription"
+        placeholder="Task description..."
+      ></textarea>
+
+      <button id="Add">Add Task</button>
+
+      <div class="links-row">
+        <span class="link-button" id="change">ChangeStatus</span>
+
+        <span class="link-button" id="delId">DeleteById</span>
+        <span class="link-button" id="show">Show</span>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal">
+        <h3>Change Task Status</h3>
+        <select id="availableTasks"></select>
+        <select id="newStatus">
+          <option value="None">None</option>
+          <option value="In progress">In progress</option>
+          <option value="Completed">Completed</option>
+          <option value="Closed">Closed</option>
+        </select>
+        <button id="applyChange">Apply</button>
+        <button class="close-btn" id="closeModal">Cancel</button>
+      </div>
+    </div>
+    <div class="modal-overlay" id="modal2">
+      <div class="modal">
+        <h3>Delete by Id</h3>
+        <input type="number" id="deleteIdInput" placeholder="Enter Task ID" />
+
+        <button id="applyChange2">Apply</button>
+        <button class="close-btn" id="closeModal2">Cancel</button>
+      </div>
+    </div>
+    <div class="modal-overlay" id="modal3">
+      <div class="modal">
+        <h3>Show all Tasks</h3>
+
+        <div class="showcard" id="showcarD"></div>
+
+        <button class="close-btn" id="closeModal3">Close</button>
+      </div>
+    </div>
+
+    <script type="module">
+      class Task {
+        constructor(id, title, description, status) {
+          this.id = id;
+          this.title = title;
+          this.description = description;
+          this.status = status;
+        }
+
+        ChangeStatus() {
+          const cngBtn = document.getElementById("Change");
+
+          const updateView = () => {
+            cngBtn.classList.remove("inProgress", "completed", "closed");
+
+            if (this.status === "In progress") {
+              cngBtn.classList.add("inProgress");
+            } else if (this.status === "Completed") {
+              cngBtn.classList.add("completed");
+            } else if (this.status === "Closed") {
+              cngBtn.classList.add("closed");
+            }
+
+            cngBtn.textContent = this.status;
+          };
+
+          updateView();
+
+          cngBtn.addEventListener("click", () => {
+            if (this.status === "In progress") {
+              this.status = "Completed";
+            } else if (this.status === "Completed") {
+              this.status = "Closed";
+            } else {
+              this.status = "In progress";
+            }
+            updateView();
+          });
+        }
+      }
+
+      class TaskManager {
+        constructor(allTasks = []) {
+          this.allTasks = allTasks;
+          this.selectedTask = null;
+        }
+        simulateAsync(message) {
+          return new Promise((resolve) => {
+            alert(message);
+            setTimeout(() => {
+              alert("Operation completed");
+              resolve();
+            }, 3000);
+          });
+        }
+
+        addNewTask() {
+          const taskT = document.getElementById("taskTittle");
+          const description = document.getElementById("taskDescription");
+          const type = document.getElementById("taskType");
+          const addBtn = document.getElementById("Add");
+
+          addBtn.addEventListener("click", async () => {
+            let valid = true;
+
+            if (taskT.value.trim() === "") {
+              taskT.classList.add("error");
+              valid = false;
+            } else {
+              taskT.classList.remove("error");
+            }
+
+            if (description.value.trim() === "") {
+              description.classList.add("error");
+              valid = false;
+            } else {
+              description.classList.remove("error");
+            }
+
+            if (type.value === "None") {
+              type.classList.add("error");
+              valid = false;
+            } else {
+              type.classList.remove("error");
+            }
+
+            if (!valid) {
+              alert("Please fill in all fields correctly.");
+              return;
+            }
+            await this.simulateAsync("Adding new task...");
+            const newTask = new Task(
+              this.allTasks.length + 1,
+              taskT.value.trim(),
+              description.value.trim(),
+              "In progress"
+            );
+            taskT.value = "";
+            description.value = "";
+            type.value = "None";
+
+            this.allTasks.push(newTask);
+            newTask.ChangeStatus();
+            this.selectedTask = newTask;
+          });
+        }
+        openChangeForm() {
+          const errorMessage = document.getElementById("errorMessage");
+
+          if (this.allTasks.length === 0) {
+            errorMessage.style.display = "block";
+            return;
+          } else {
+            errorMessage.style.display = "none";
+          }
+
+          const modal = document.getElementById("modalOverlay");
+          const closeBtn = document.getElementById("closeModal");
+          const applyBtn = document.getElementById("applyChange");
+          const statusSelect = document.getElementById("newStatus");
+          const tasksSelect = document.getElementById("availableTasks");
+
+          tasksSelect.innerHTML = "";
+          applyBtn.disabled = true;
+          applyBtn.style.cursor = "not-allowed";
+
+          this.allTasks.forEach((task) => {
+            const option = document.createElement("option");
+            option.value = task.id;
+            option.textContent = `#${task.id} - ${task.title}`;
+            tasksSelect.appendChild(option);
+          });
+
+          if (this.allTasks.length > 0) {
+            tasksSelect.selectedIndex = 0;
+            const selectedId = parseInt(tasksSelect.value);
+            this.selectedTask = this.allTasks.find((t) => t.id === selectedId);
+            applyBtn.disabled = false;
+            applyBtn.style.cursor = "pointer";
+            statusSelect.value = this.selectedTask.status;
+          }
+
+          tasksSelect.onchange = () => {
+            const selectedId = parseInt(tasksSelect.value);
+            this.selectedTask = this.allTasks.find((t) => t.id === selectedId);
+
+            if (this.selectedTask) {
+              applyBtn.disabled = false;
+              applyBtn.style.cursor = "pointer";
+              statusSelect.value = this.selectedTask.status;
+            }
+          };
+
+          modal.style.display = "flex";
+
+          closeBtn.onclick = () => {
+            modal.style.display = "none";
+            this.selectedTask = null;
+          };
+
+          applyBtn.onclick = () => {
+            if (this.selectedTask) {
+              this.selectedTask.status = statusSelect.value;
+              this.selectedTask.ChangeStatus();
+            }
+
+            modal.style.display = "none";
+            this.selectedTask = null;
+          };
+        }
+
+        deleteTask() {
+          const modal = document.getElementById("modal2");
+          const closeBtn = document.getElementById("closeModal2");
+          const applyBtn = document.getElementById("applyChange2");
+          const deleteIdInput = document.getElementById("deleteIdInput");
+
+          modal.style.display = "flex";
+          applyBtn.disabled = true;
+          applyBtn.style.cursor = "not-allowed";
+
+          deleteIdInput.addEventListener("input", () => {
+            if (deleteIdInput.value.trim() !== "") {
+              applyBtn.disabled = false;
+              applyBtn.style.cursor = "pointer";
+            } else {
+              applyBtn.disabled = true;
+              applyBtn.style.cursor = "not-allowed";
+            }
+          });
+
+          closeBtn.onclick = () => {
+            modal.style.display = "none";
+          };
+
+          applyBtn.onclick = async () => {
+            const id = parseInt(deleteIdInput.value);
+            const index = this.allTasks.findIndex((x) => x.id === id);
+            await this.simulateAsync("Deleting task...");
+
+            if (index !== -1) {
+              deleteIdInput.value = "";
+              this.allTasks.splice(index, 1);
+
+              modal.style.display = "none";
+            } else {
+              deleteIdInput.value = "";
+              applyBtn.disabled = true;
+              applyBtn.style.cursor = "not-allowed";
+
+              alert("Task with such ID does not exist");
+            }
+          };
+        }
+        async showAllTasks() {
+          const modal = document.getElementById("modal3");
+          const closeBtn = document.getElementById("closeModal3");
+          const showCard = document.getElementById("showcarD");
+          showCard.innerHTML = "Loading all tasks...";
+
+          await this.simulateAsync("Loading  tasks from server...");
+
+          showCard.innerHTML = "";
+          this.allTasks.forEach((task) => {
+            const taskDiv = document.createElement("div");
+            taskDiv.style.borderBottom = "1px solid #3b4658";
+            taskDiv.style.padding = "10px 0";
+
+            const title = document.createElement("h4");
+            title.textContent = `#${task.id} - ${task.title}`;
+            title.style.marginBottom = "5px";
+
+            const description = document.createElement("p");
+            description.textContent = task.description;
+            description.style.marginBottom = "5px";
+
+            const status = document.createElement("p");
+            status.textContent = `Status: ${task.status}`;
+
+            taskDiv.appendChild(title);
+            taskDiv.appendChild(description);
+            taskDiv.appendChild(status);
+
+            showCard.appendChild(taskDiv);
+          });
+
+          modal.style.display = "flex";
+
+          closeBtn.onclick = () => {
+            modal.style.display = "none";
+          };
+        }
+      }
+
+      const task1 = new Task(
+        1,
+        "Initial Task",
+        "This is the first task",
+        "In progress"
+      );
+      const task2 = new Task(
+        2,
+        "Second Task",
+        "This is the second task",
+        "Completed"
+      );
+
+      const Tasks = new TaskManager([task1, task2]);
+      Tasks.selectedTask = task1;
+      Tasks.addNewTask();
+
+      document.getElementById("change").addEventListener("click", () => {
+        Tasks.openChangeForm();
+      });
+      document.getElementById("delId").addEventListener("click", () => {
+        Tasks.deleteTask();
+      });
+      document.getElementById("show").addEventListener("click", () => {
+        Tasks.showAllTasks();
+      });
+    </script>
+  </body>
+</html>

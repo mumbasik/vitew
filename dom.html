@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #5c8acf;
+        font-family: Arial, sans-serif;
+      }
+      .center-box {
+        width: 400px;
+        height: 700px;
+        background-color: #091838d8;
+        border: 2px solid #333;
+        border-radius: 20px 20px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        box-shadow: 0 0 15px rgba(33, 19, 223, 0.555);
+        padding: 0;
+        gap: 15px;
+      }
+      .showBox {
+        width: 420px;
+        max-height: 400px;
+        overflow-y: auto;
+        background-color: #020235d8;
+        border: 2px solid #1c2b7a;
+        border-radius: 20px;
+        box-shadow: 0 0 25px rgba(0, 80, 255, 0.4);
+        margin-left: 30px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        transition: 0.3s ease;
+      }
+
+      .showBox::-webkit-scrollbar {
+        width: 8px;
+      }
+      .showBox::-webkit-scrollbar-thumb {
+        background: #1e3bff;
+        border-radius: 10px;
+      }
+      .showBox::-webkit-scrollbar-thumb:hover {
+        background: #00bfff;
+      }
+
+      .showBox button {
+        align-self: center;
+        background-color: #1e2a78;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: 0.3s;
+        font-weight: bold;
+        font-size: 14px;
+        box-shadow: 0 0 8px rgba(0, 0, 255, 0.5);
+      }
+      .showBox button:hover {
+        background-color: #263baf;
+        color: cyan;
+        box-shadow: 0 0 15px cyan;
+      }
+
+      .showBox p {
+        text-align: center;
+        color: #a4b9ff;
+        font-family: "Segoe UI", sans-serif;
+        font-size: 15px;
+        text-shadow: 0 0 4px #0040ff;
+        margin-top: 15px;
+      }
+
+      .event-card {
+        background: rgba(15, 20, 60, 0.95);
+        border: 1px solid #3344aa;
+        border-radius: 15px;
+        padding: 15px 20px;
+        box-shadow: 0 0 12px rgba(0, 0, 255, 0.25);
+        transition: 0.3s;
+      }
+      .event-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+      }
+
+      .event-card h3 {
+        margin: 0;
+        color: #e0e0ff;
+        font-size: 17px;
+        text-shadow: 0 0 6px #00f;
+      }
+
+      .event-card p {
+        margin: 5px 0;
+        color: #aaccff;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .event-card button {
+        margin-top: 10px;
+        background-color: #1c1c6a;
+        border: none;
+        color: white;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .event-card button:hover {
+        background-color: #2727a8;
+        box-shadow: 0 0 10px #00f;
+        color: cyan;
+      }
+
+      .error {
+        border: 2px solid red !important;
+        box-shadow: 0 0 10px red !important;
+        background-color: #ffe6e6;
+      }
+
+      .error-message {
+        color: red;
+        font-size: 12px;
+        margin: 5px 10px 0 10px;
+        display: none;
+      }
+
+      .error + .error-message {
+        display: block;
+      }
+
+      .inner-block {
+        width: 100%;
+        background-color: #020235d8;
+        border-color: #333;
+        border-radius: 20px 20px 0 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        padding: 0;
+        margin: 0;
+      }
+      button {
+        width: 100px;
+        padding: 10px;
+        margin: 10px auto;
+        border-radius: 8px;
+        border-color: rgba(13, 5, 39, 0.973);
+        background-color: rgb(9, 5, 59);
+        border: none;
+
+        cursor: pointer;
+        transition: 0.3s;
+        align-self: center;
+
+        transition: 0.3;
+      }
+      button:hover {
+        color: aqua;
+        transform: scale(1.1);
+        box-shadow: 0 0 10px darkblue;
+      }
+      input {
+        padding: 5px;
+        margin: 10px;
+        border-radius: 8px;
+        border-color: rgba(13, 5, 39, 0.973);
+        background-color: rgb(9, 5, 59);
+        outline: none;
+        transition: 0.3s;
+      }
+
+      h1 {
+        color: #fff;
+        padding: 10px;
+        margin: 10px;
+        font-family: fantasy;
+        animation: glow 2s infinite;
+      }
+      label {
+        margin: 10px;
+        color: rgb(111, 66, 196);
+        margin-bottom: 5px;
+        font-size: 14px;
+        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+        color: #fff;
+
+        text-shadow: 0 0 5px #00f, 0 0 10px #00f, 0 0 20px #00f, 0 0 40px #00f;
+        text-decoration: underline;
+      }
+      select {
+        padding: 5px;
+        margin: 10px;
+        border-radius: 8px;
+        border-color: rgba(13, 5, 39, 0.973);
+        background-color: rgb(9, 5, 59);
+        transition: 0.3s;
+      }
+      select:hover {
+        color: aqua;
+      }
+      select:focus {
+        border-color: darkblue;
+        box-shadow: 0 0 10px darkblue;
+      }
+      textarea {
+        padding: 5px;
+        margin: 10px;
+        border-radius: 8px;
+        border-color: rgba(13, 5, 39, 0.973);
+        background-color: rgb(9, 5, 59);
+        transition: 0.3s;
+      }
+      textarea:focus {
+        background-color: darkblue;
+        box-shadow: 0 0 10px darkblue;
+        background-color: white;
+      }
+      textarea:hover {
+        color: aqua;
+      }
+      input:hover {
+        color: aqua;
+      }
+      input:focus {
+        border-color: darkblue;
+        box-shadow: 0 0 10px darkblue;
+        background-color: #e6f0ff;
+      }
+    </style>
+
+    <div class="center-box">
+      <div class="inner-block">
+        <h1 id="eventName">Create an event</h1>
+      </div>
+      <label for="eventNameInput">Event name</label>
+      <input
+        type="text"
+        id="eventNameInput"
+        placeholder="Enter event name..."
+      />
+      <div id="Error" class="error-message">
+        Invalid input. Event name should main contain only 3 or more symbols. Or
+        the field is empty.
+      </div>
+
+      <label for="dateSelecter">Event date</label>
+      <input type="date" id="dateSelecter" />
+      <div id="ErrorDate" class="error-message">
+        Invalid input. Date cannot be in the past. Or date is not selected.
+      </div>
+
+      <label for="type">Event type</label>
+
+      <select name="type" id="type">
+        <option value="None">None</option>
+        <option value="Birthday">Birthday</option>
+        <option value="Meeting">Meeting</option>
+        <option value="Interview">Interview</option>
+        <option value="Prom">Prom</option>
+        <option value="Celebration">Celebration</option>
+      </select>
+      <div id="checkError" class="error-message">
+        Invalid input. There is no event type selected.
+      </div>
+      <label for="Description">Description</label>
+      <textarea
+        name="Description"
+        id="Description"
+        placeholder="Description"
+      ></textarea>
+      <div id="countError" class="error-message">
+        Invalid input. Description must not exceed 500 characters. Or the field
+        is empty.
+      </div>
+
+      <button id="saveBtn">Save</button>
+    </div>
+    <div class="showBox">
+      <button id="delButton">Delete</button>
+    </div>
+  </head>
+  <body>
+    <script type="module">
+      const eNameInp = document.getElementById("eventNameInput");
+      const btnSave = document.getElementById("saveBtn");
+      const error = document.getElementById("Error");
+      const chosenDate = document.getElementById("dateSelecter");
+      const errorDate = document.getElementById("ErrorDate");
+      const CheckError = document.getElementById("checkError");
+      const checkBox = document.getElementById("type");
+      const description = document.getElementById("Description");
+      const descError = document.getElementById("countError");
+      const delBtn = document.getElementById("delButton");
+      const showBox = document.querySelector(".showBox");
+
+      function displayEvents() {
+        showBox.innerHTML = '<button id="delButton">Delete All</button>';
+        const events = JSON.parse(localStorage.getItem("events")) || [];
+
+        if (events.length === 0) {
+          const emptyMsg = document.createElement("p");
+          emptyMsg.textContent = "No events yet.";
+          emptyMsg.style.color = "white";
+          emptyMsg.style.textAlign = "center";
+          showBox.appendChild(emptyMsg);
+          return;
+        }
+
+        events.forEach((event, index) => {
+          const eventCard = document.createElement("div");
+          eventCard.className = "event-card";
+
+          const eventTitle = document.createElement("h2");
+          eventTitle.textContent = event.name;
+
+          const eventDate = document.createElement("p");
+          eventDate.textContent = `Date: ${event.date}`;
+
+          const eventType = document.createElement("p");
+          eventType.textContent = `Type: ${event.type}`;
+
+          const eventDesc = document.createElement("p");
+          eventDesc.textContent = `Description: ${event.description}`;
+
+          const deleteOne = document.createElement("button");
+          deleteOne.textContent = "Delete";
+          deleteOne.style.width = "80px";
+          deleteOne.style.marginTop = "10px";
+          deleteOne.onclick = () => {
+            deleteEvent(index);
+          };
+
+          eventCard.append(
+            eventTitle,
+            eventDate,
+            eventType,
+            eventDesc,
+            deleteOne
+          );
+          showBox.appendChild(eventCard);
+        });
+
+        const delAllBtn = document.getElementById("delButton");
+        delAllBtn.onclick = () => {
+          localStorage.removeItem("events");
+          displayEvents();
+        };
+      }
+
+      btnSave.addEventListener("click", function () {
+        let isError = false;
+        const text = eNameInp.value.trim();
+        if (text.length < 3) {
+          eNameInp.classList.add("error");
+          error.style.display = "block";
+          isError = true;
+        } else {
+          eNameInp.classList.remove("error");
+          error.style.display = "none";
+        }
+
+        const selectedDate = new Date(chosenDate.value);
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        if (!chosenDate.value || selectedDate < now) {
+          chosenDate.classList.add("error");
+          errorDate.style.display = "block";
+          isError = true;
+        } else {
+          chosenDate.classList.remove("error");
+          errorDate.style.display = "none";
+        }
+
+        const check = checkBox.value;
+        if (check === "None") {
+          checkBox.classList.add("error");
+          CheckError.style.display = "block";
+          isError = true;
+        } else {
+          checkBox.classList.remove("error");
+          CheckError.style.display = "none";
+        }
+
+        const elements = description.value;
+        if (elements.length > 500) {
+          description.classList.add("error");
+          descError.style.display = "block";
+          isError = true;
+        } else {
+          description.classList.remove("error");
+          descError.style.display = "none";
+        }
+
+        if (isError) return;
+
+        const newEvent = {
+          name: text,
+          date: chosenDate.value,
+          type: check,
+          description: elements,
+        };
+
+        const events = JSON.parse(localStorage.getItem("events")) || [];
+        events.push(newEvent);
+        localStorage.setItem("events", JSON.stringify(events));
+
+        eNameInp.value = "";
+        chosenDate.value = "";
+        checkBox.value = "None";
+        description.value = "";
+
+        displayEvents();
+      });
+
+      function deleteEvent(index) {
+        const events = JSON.parse(localStorage.getItem("events")) || [];
+        events.splice(index, 1);
+        localStorage.setItem("events", JSON.stringify(events));
+        displayEvents();
+      }
+
+      eNameInp.addEventListener("input", () => {
+        if (eNameInp.value.trim().length >= 3) {
+          eNameInp.classList.remove("error");
+          error.style.display = "none";
+        }
+      });
+
+      chosenDate.addEventListener("change", () => {
+        const selectedDate = new Date(chosenDate.value);
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        if (chosenDate.value && selectedDate >= now) {
+          chosenDate.classList.remove("error");
+          errorDate.style.display = "none";
+        }
+      });
+
+      checkBox.addEventListener("input", () => {
+        const check = checkBox.value;
+        if (check !== "None") {
+          checkBox.classList.remove("error");
+          CheckError.style.display = "none";
+        }
+      });
+
+      description.addEventListener("input", () => {
+        const elements = description.value;
+        if (elements.length <= 500) {
+          description.classList.remove("error");
+          descError.style.display = "none";
+        }
+      });
+
+      window.addEventListener("load", displayEvents);
+    </script>
+  </body>
+</html>
